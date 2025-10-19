@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
-import Opt from "../models/otpModel";
+import Opt from "../models/OtpModel";
 import { sendOtpEmail } from "../utils/sendOtpEmail";
 
 // ✅ Register a new user

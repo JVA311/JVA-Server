@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import Otp from "../models/otpModel";
+import Otp from "../models/OtpModel";
 import sendRegisterEmail from "../utils/sendRegisterEmail";
 
-export const validateOtp = async (req: Request, res: Response) => {
+export const validateRegisterOtp = async (req: Request, res: Response) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
@@ -11,7 +11,7 @@ export const validateOtp = async (req: Request, res: Response) => {
     throw new Error("Email and OTP code are required");
   }
 
-  const otpRecord = await Otp.findOne({ email, code });
+   const otpRecord = await Otp.findOne({ email, code, purpose: "register" });
   if (!otpRecord) {
     res.status(400);
     throw new Error("Invalid OTP code");
