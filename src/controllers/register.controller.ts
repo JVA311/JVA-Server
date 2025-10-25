@@ -2,18 +2,19 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User";
 import Opt from "../models/OtpModel";
+
 import { sendOtpEmail } from "../utils/sendOtpEmail";
 
 // ✅ Register a new user
 export const registerUser = async (req: Request, res: Response) => {
-  const { fullName, email, password, comfirmPassword } = req.body;
+  const { fullName, email, password, confirmPassword, role, category } = req.body;
 
-  if (!fullName || !email || !password || !comfirmPassword) {
+  if (!fullName || !email || !password || !confirmPassword || !role || !category) {
     res.status(400);
     throw new Error("Please fill in all fields");
   }
 
-  if (password !== comfirmPassword) {
+  if (password !== confirmPassword) {
     res.status(400);
     throw new Error("Passwords do not match");
   }
@@ -33,7 +34,11 @@ export const registerUser = async (req: Request, res: Response) => {
     fullName,
     email,
     password: hashedPassword,
+    role,
+    category,
   });
+
+  
 
   // Generate and send OTP
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
