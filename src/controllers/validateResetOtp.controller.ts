@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Otp from "../models/OtpModel";
-import User from "../models/User";
+import User from "../models/Mandate";
 
 export const validateResetOtp = async (req: Request, res: Response) => {
   const { email, code } = req.body;

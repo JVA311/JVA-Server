@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/Mandate";
 import Otp from "../models/OtpModel";
 import sendForgotPasswordEmail from "../utils/sendForgotPasswordEmail";
 

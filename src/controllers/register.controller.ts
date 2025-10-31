@@ -1,62 +1,101 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import User from "../models/User";
-import Otp from "../models/OtpModel";
-import { sendOtpEmail } from "../utils/sendOtpEmail";
+import Mandate from "../models/Mandate";
+import LandOwner from "../models/LandOwner";
+import Investor from "../models/Investor";
+import { StatusCodes } from "http-status-codes";
+import jwt from "jsonwebtoken"
+
+interface IUserInfo {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  category: string;
+}
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { fullName, email, password, comfirmPassword, } = req.body;
+  const { fullName, email, password, confirmPassword, role, category } = req.body as IUserInfo;
 
-  if (!fullName || !email || !password || !comfirmPassword) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+  // Check if email already exists
+  const LandOwnerEmail = await LandOwner.findOne({ email })
+  const MandateEmail = await Mandate.findOne({ email })
+  const InvestorEmail = await Investor.findOne({ email })
+
+  if (LandOwnerEmail || MandateEmail || InvestorEmail) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Email already in use"
+    })
   }
 
-  if (password !== comfirmPassword) {
-    res.status(400);
-    throw new Error("Passwords do not match");
+  // Check if fullName already exists
+  const LandOwnerName = await LandOwner.findOne({ fullName })
+  const MandateName = await Mandate.findOne({ fullName })
+  const InvestorName = await Investor.findOne({ fullName })
+
+  if (LandOwnerName || MandateName || InvestorName) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Full name already in use"
+    })
   }
 
-  const existingEmail = await User.findOne({ email });
-  if (existingEmail) {
-    res.status(400);
-    throw new Error("Email already in use");
+  if (!fullName || !email || !password || !confirmPassword || !role || !category) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Please fill in all fields"
+    });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  if (password !== confirmPassword) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message:"Passwords do not match"
+    });
+  }
 
-  // Create user
-  const newUser = await User.create({
+  // Map role to corresponding model
+  const roleModelMap: Record<string, typeof LandOwner | typeof Investor | typeof Mandate> = {
+    "Landowner": LandOwner,
+    "Investor": Investor,
+    "Mandate": Mandate
+  };
+
+  const UserModel = roleModelMap[role];
+
+  if (!UserModel) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Invalid role specified"
+    });
+  }
+
+  const user = await (UserModel as any).create({
     fullName,
     email,
-    password: hashedPassword,
+    password,
+    role,
+    category,
   });
 
-  // Generate OTP
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  // generate JWT token for auto-login
+  const token = jwt.sign(
+    { id: user._id, role: user.role},
+    process.env.JWT_SECRET!,
+    { expiresIn: "2d"}
+  )
 
-  // Save or overwrite OTP
-  await Otp.findOneAndUpdate(
-    { email },
-    {
-      code: otpCode,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-    },
-    { upsert: true, new: true }
-  );
-
-  // ✅ Try-catch ONLY around email sending
-  try {
-    await sendOtpEmail(email, otpCode);
-  } catch (error) {
-    // Roll back user if email sending fails
-    await User.findByIdAndDelete(newUser._id);
-    res.status(500);
-    throw new Error("Failed to send OTP. Please try again.");
-  }
-
-  res.status(201).json({
+  return res.status(StatusCodes.CREATED).json({
     status: true,
-    message: "User registered successfully. OTP sent to email.",
+    message: "User registered successfully.",
+    user: {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      category: user.category,
+    },
+    token
   });
 };
