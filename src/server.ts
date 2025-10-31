@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/dbConnection";
 import cors from "cors";
 import routes from "./routes/routes";
-import errorHandler from "./middlewares/error";
+import errorHandler from "./middlewares/error"
 
 // Load environment variables
 dotenv.config();
