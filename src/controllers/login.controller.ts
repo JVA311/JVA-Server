@@ -1,29 +1,46 @@
 import { Request, Response } from "express";
-import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
+
+import Mandate from "../models/Mandate";
+import Investor from "../models/Investor";
+import LandOwner from "../models/LandOwner";
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   // Check if fields are provided
   if (!email || !password) {
-    res.status(400);
-    throw new Error("Please provide both email and password");
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Please provide both email and password"
+    });
   }
 
-  // Check if user exists
-  const user = await User.findOne({ email });
+  // Try to find user in each collection
+  const landOwnerUser = await LandOwner.findOne({ email });
+  const mandateUser = await Mandate.findOne({ email });
+  const investorUser = await Investor.findOne({ email });
+  
+  // Determine which user type was found
+  const user = landOwnerUser || mandateUser || investorUser;
+  
+  // If no user found with this email
   if (!user) {
-    res.status(404);
-    throw new Error("User not found");
+    return res.status(StatusCodes.NOT_FOUND).json({
+      status: false,
+      message: "User not found"
+    });
   }
 
   // Compare passwords
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    res.status(401);
-    throw new Error("Invalid credentials");
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      status: false,
+      message: "Invalid credentials"
+    });
   }
 
   // Generate JWT
@@ -34,9 +51,16 @@ export const loginUser = async (req: Request, res: Response) => {
   );
 
   // Send response
-  res.status(200).json({
+  return res.status(StatusCodes.OK).json({
     status: true,
     message: "Login successful",
+    user: {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      category: user.category,
+    },
     token,
   });
 };

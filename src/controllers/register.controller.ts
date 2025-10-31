@@ -1,56 +1,101 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import User from "../models/User";
-import Opt from "../models/OtpModel";
+import Mandate from "../models/Mandate";
+import LandOwner from "../models/LandOwner";
+import Investor from "../models/Investor";
+import { StatusCodes } from "http-status-codes";
+import jwt from "jsonwebtoken"
 
-import { sendOtpEmail } from "../utils/sendOtpEmail";
+interface IUserInfo {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  category: string;
+}
 
-// ✅ Register a new user
 export const registerUser = async (req: Request, res: Response) => {
-  const { fullName, email, password, confirmPassword, role, category } = req.body;
+  const { fullName, email, password, confirmPassword, role, category } = req.body as IUserInfo;
+
+  // Check if email already exists
+  const LandOwnerEmail = await LandOwner.findOne({ email })
+  const MandateEmail = await Mandate.findOne({ email })
+  const InvestorEmail = await Investor.findOne({ email })
+
+  if (LandOwnerEmail || MandateEmail || InvestorEmail) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Email already in use"
+    })
+  }
+
+  // Check if fullName already exists
+  const LandOwnerName = await LandOwner.findOne({ fullName })
+  const MandateName = await Mandate.findOne({ fullName })
+  const InvestorName = await Investor.findOne({ fullName })
+
+  if (LandOwnerName || MandateName || InvestorName) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Full name already in use"
+    })
+  }
 
   if (!fullName || !email || !password || !confirmPassword || !role || !category) {
-    res.status(400);
-    throw new Error("Please fill in all fields");
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Please fill in all fields"
+    });
   }
 
   if (password !== confirmPassword) {
-    res.status(400);
-    throw new Error("Passwords do not match");
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message:"Passwords do not match"
+    });
   }
 
-  // Check if user already exists
-  const existingEmail = await User.findOne({ email });
-  if (existingEmail) {
-    res.status(400);
-    throw new Error("Email already in use");
+  // Map role to corresponding model
+  const roleModelMap: Record<string, typeof LandOwner | typeof Investor | typeof Mandate> = {
+    "Landowner": LandOwner,
+    "Investor": Investor,
+    "Mandate": Mandate
+  };
+
+  const UserModel = roleModelMap[role];
+
+  if (!UserModel) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: false,
+      message: "Invalid role specified"
+    });
   }
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Create new user
-  await User.create({
+  const user = await (UserModel as any).create({
     fullName,
     email,
-    password: hashedPassword,
+    password,
     role,
     category,
   });
 
-  
+  // generate JWT token for auto-login
+  const token = jwt.sign(
+    { id: user._id, role: user.role},
+    process.env.JWT_SECRET!,
+    { expiresIn: "2d"}
+  )
 
-  // Generate and send OTP
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  await Opt.create({
-    email,
-    code: otpCode,
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-  });
-  await sendOtpEmail(email, otpCode);
-
-  res.status(201).json({
+  return res.status(StatusCodes.CREATED).json({
     status: true,
-    message: "User registered. OTP sent.",
+    message: "User registered successfully.",
+    user: {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+      category: user.category,
+    },
+    token
   });
 };
