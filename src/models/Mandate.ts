@@ -14,6 +14,10 @@ export interface IMandate extends Document {
   specialization: string;
   companyName: string;
   phoneNumber: string;
+  totalRequest: number;
+  active: number;
+  matched: number;
+  availableMatches: number;
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -51,37 +55,41 @@ const MandateSchema: Schema<IMandate> = new Schema(
     title: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
     trackRecord: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
     capacityExpertise: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
     specialization: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
     companyName: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
     phoneNumber: {
       type: String,
       trim: true,
-      default: ""
+      default: "",
     },
+    totalRequest: { type: Number, default: 0 },
+    active: { type: Number, default: 0 },
+    matched: { type: Number, default: 0 },
+    availableMatches: { type: Number, default: 0 },
     isVerified: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   { timestamps: true }
 );

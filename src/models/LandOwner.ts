@@ -15,6 +15,10 @@ export interface ILandOwner extends Document {
   preferredPartnershipType: string;
   landDescription: string;
   phoneNumber: string;
+  totalRequest: number;
+  active: number;
+  matched: number;
+  availableMatches: number;
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -34,7 +38,7 @@ const LandOwnerSchema: Schema<ILandOwner> = new Schema(
       lowercase: true,
       trim: true,
     },
-    password: { 
+    password: {
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
@@ -52,37 +56,41 @@ const LandOwnerSchema: Schema<ILandOwner> = new Schema(
       enum: ["Individual", "Cooperative", "Government"],
     },
     landLocation: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     landSize: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     licenseNumber: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     documentationStatus: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     preferredPartnershipType: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     landDescription: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     phoneNumber: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
+    totalRequest: { type: Number, default: 0 },
+    active: { type: Number, default: 0 },
+    matched: { type: Number, default: 0 },
+    availableMatches: { type: Number, default: 0 },
     isVerified: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   { timestamps: true }
 );

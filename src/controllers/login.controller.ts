@@ -8,59 +8,67 @@ import Investor from "../models/Investor";
 import LandOwner from "../models/LandOwner";
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // Check if fields are provided
-  if (!email || !password) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
+    // Check if fields are provided
+    if (!email || !password) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: false,
+        message: "Please provide both email and password",
+      });
+    }
+
+    // Try to find user in each collection
+    const landOwnerUser = await LandOwner.findOne({ email });
+    const mandateUser = await Mandate.findOne({ email });
+    const investorUser = await Investor.findOne({ email });
+
+    // Determine which user type was found
+    const user = landOwnerUser || mandateUser || investorUser;
+
+    // If no user found with this email
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        status: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role, category: user.category },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    );
+
+    // Send response
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        category: user.category,
+      },
+      token,
+    });
+  } catch (error: any) {
+    console.error("Error during login:", error?.message || error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
-      message: "Please provide both email and password"
+      message: "Login failed",
     });
   }
-
-  // Try to find user in each collection
-  const landOwnerUser = await LandOwner.findOne({ email });
-  const mandateUser = await Mandate.findOne({ email });
-  const investorUser = await Investor.findOne({ email });
-  
-  // Determine which user type was found
-  const user = landOwnerUser || mandateUser || investorUser;
-  
-  // If no user found with this email
-  if (!user) {
-    return res.status(StatusCodes.NOT_FOUND).json({
-      status: false,
-      message: "User not found"
-    });
-  }
-
-  // Compare passwords
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({
-      status: false,
-      message: "Invalid credentials"
-    });
-  }
-
-  // Generate JWT
-  const token = jwt.sign(
-    { id: user._id, role: user.role, category: user.category },
-    process.env.JWT_SECRET!,
-    { expiresIn: "7d" }
-  );
-
-  // Send response
-  return res.status(StatusCodes.OK).json({
-    status: true,
-    message: "Login successful",
-    user: {
-      id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role,
-      category: user.category,
-    },
-    token,
-  });
 };

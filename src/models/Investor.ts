@@ -18,6 +18,10 @@ export interface Iinvestor extends Document {
   companyName: string;
   phoneNumber: string;
   isVerified: boolean;
+  totalRequest: number;
+  active: number;
+  matched: number;
+  availableMatches: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,7 +40,7 @@ const InvestorSchema: Schema<Iinvestor> = new Schema(
       lowercase: true,
       trim: true,
     },
-    password: { 
+    password: {
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
@@ -52,43 +56,48 @@ const InvestorSchema: Schema<Iinvestor> = new Schema(
       enum: ["Individual", "Cooperative", "Government"],
     },
     preferredLocation: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     investmentType: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     budgetRange: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     projectType: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     yearsOfExperience: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     registrationLicenseNumber: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     companyName: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
     phoneNumber: {
-        type: String,
-        default: ""
+      type: String,
+      default: "",
     },
+
+    totalRequest: { type: Number, default: 0 },
+    active: { type: Number, default: 0 },
+    matched: { type: Number, default: 0 },
+    availableMatches: { type: Number, default: 0 },
     isVerified: {
       type: Boolean,
       default: false,
-    }
+    },
   },
-  { 
+  {
     timestamps: true,
   }
 );
