@@ -5,6 +5,7 @@ import authRoutes from "./auth.routes";
 import usersRoutes from "./users.routes";
 import contact from "./contact.routes";
 import requestRoutes from "./reqeust.routes";
+import searchRoutes from "./search.routes";
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use(`${base}/auth`, authRoutes)
 router.use(`${base}/users`, usersRoutes)
 router.use(`${base}/contact`, contact)
 router.use(`${base}/request`, requestRoutes)
+router.use(`${base}/search`, searchRoutes)
 
 export default router
