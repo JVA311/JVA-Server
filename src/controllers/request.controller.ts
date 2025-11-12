@@ -120,6 +120,7 @@ export const createRequest = async (
       message: "Request created successfully",
     });
   } catch (err: any) {
+    console.log(err.message);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ status: false, message: "Something went wrong" });
@@ -137,3 +138,30 @@ export const getAllRequests = async (req: Request, res: Response) => {
       .json({ error: "Failed to fetch requests" });
   }
 };
+
+export const getRequestById = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    const { id } = req.user;
+    const request = await RequestModel.find({ userId: id }).sort({ createdAt: -1 });
+
+    if (!request) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Request not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      data: request,
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: "Failed to fetch request",
+    });
+  }
+}

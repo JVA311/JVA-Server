@@ -7,12 +7,18 @@ import { StatusCodes } from "http-status-codes";
 export const getUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await Mandate.findById(id);
-    if (!user) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ status: false, message: "User not found" });
-    }
+    const mandate = await Mandate.findById(id);
+    const investor = await Investor.findById(id);
+    const landowner = await LandOwner.findById(id);
+
+    // if (!mandate || !investor || !landowner) {
+    //   return res
+    //     .status(StatusCodes.NOT_FOUND)
+    //     .json({ status: false, message: "User not found" });
+    // }
+
+    const user = mandate || investor || landowner;
+
     return res.status(StatusCodes.OK).json({
       status: true,
       message: "User fetched successfully",

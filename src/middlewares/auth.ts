@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -18,7 +19,7 @@ export const authMiddleware = (
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No token provided" });
     }
 
     const token = authHeader.split(" ")[1];
@@ -35,6 +36,6 @@ export const authMiddleware = (
     next();
   } catch (error) {
     console.error("Auth error:", error);
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid or expired token" });
   }
 };
