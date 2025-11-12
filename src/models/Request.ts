@@ -6,7 +6,7 @@ export interface IRequest extends Document {
   email: string;
   phoneNumber: string;
   location?: string;
-  budget?: number;
+  budget?: string;
   timeline?: string;
   requestType: string;
   description: string;
@@ -24,7 +24,7 @@ const RequestSchema: Schema = new Schema(
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     location: { type: String, required: true },
-    budget: { type: Number, required: true },
+    budget: { type: String, required: true },
     timeline: { type: String, required: true },
     requestType: {
       type: String,
