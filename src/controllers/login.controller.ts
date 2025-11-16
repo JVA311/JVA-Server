@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-
 import Mandate from "../models/Mandate";
 import Investor from "../models/Investor";
 import LandOwner from "../models/LandOwner";

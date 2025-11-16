@@ -16,12 +16,11 @@ const transporter = nodemailer.createTransport({
 
 const sendForgotPasswordEmail = async (
   email: string,
-  name: string,
   otp: string
 ) => {
   const templatePath = path.join(__dirname, "../templates/forgotPassword.ejs");
 
-  const html = await ejs.renderFile(templatePath, { name, otp });
+  const html = await ejs.renderFile(templatePath, { otp });
 
   await transporter.sendMail({
     from: `"Joint Venture Assets" <${process.env.SMTP_USER}>`,

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import User from "../models/Mandate";
+import Investor from "../models/Investor";
+import LandOwner from "../models/LandOwner";
+import Mandate from "../models/Mandate";
 import { StatusCodes } from "http-status-codes";
 
 export const resetPassword = async (req: Request, res: Response) => {
@@ -14,30 +16,36 @@ export const resetPassword = async (req: Request, res: Response) => {
       });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    // Check user across the 3 models
+    const landOwnerName = await LandOwner.findOne({ email });
+    const mandateName = await Mandate.findOne({ email });
+    const investorName = await Investor.findOne({ email });
+
+    const user = landOwnerName || mandateName || investorName;
+
     if (!user) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ status: false, message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Email not found",
+      });
     }
 
-    // Hash the new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    // Hash new password
+    // const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update user password
-    user.password = hashedPassword;
+    // Update password
+    user.password = newPassword;
     await user.save();
 
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Password has been reset successfully. You can now log in.",
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Password reset successful. You can now log in.",
     });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
-      message: "Failed to reset password",
+      message: "Server Error",
     });
   }
 };
