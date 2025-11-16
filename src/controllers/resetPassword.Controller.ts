@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
 import Investor from "../models/Investor";
 import LandOwner from "../models/LandOwner";
 import Mandate from "../models/Mandate";
@@ -29,9 +28,6 @@ export const resetPassword = async (req: Request, res: Response) => {
         message: "Email not found",
       });
     }
-
-    // Hash new password
-    // const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password
     user.password = newPassword;

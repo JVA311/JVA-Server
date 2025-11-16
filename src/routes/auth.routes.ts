@@ -2,9 +2,9 @@ import express from "express";
 import { registerUser } from "../controllers/register.controller";
 import { loginUser } from "../controllers/login.controller";
 import { validateRegisterOtp } from "../controllers/validateRegisterOtp.controller";
-import { requestPasswordOtp } from "../controllers/sendResetpasswordOtp.controller";
 import { verifyPasswordOtp } from "../controllers/validateResetOtp.controller";
 import { resetPassword } from "../controllers/resetPassword.Controller";
+import { requestPasswordOtp } from "../controllers/sendResetPasswordOtp.controller";
 
 const router = express.Router();
 
