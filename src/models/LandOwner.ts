@@ -40,7 +40,7 @@ const LandOwnerSchema: Schema<ILandOwner> = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: false,
       minlength: 6,
     },
     role: {
