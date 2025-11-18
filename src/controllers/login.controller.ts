@@ -18,8 +18,7 @@ interface IUserInfo {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password, googleToken, role, category } =
-      req.body as IUserInfo;
+    const { email, password, googleToken } = req.body as IUserInfo;
 
     let user;
 
@@ -36,7 +35,6 @@ export const loginUser = async (req: Request, res: Response) => {
         });
       }
       const googleEmail = decoded?.email;
-      const googleName = decoded?.name;
 
       // Check user in database
       const landOwnerUser = await LandOwner.findOne({ email: googleEmail });
@@ -46,12 +44,9 @@ export const loginUser = async (req: Request, res: Response) => {
       user = landOwnerUser || mandateUser || investorUser;
 
       if (!user) {
-        user = await LandOwner.create({
-          fullName: googleName || "",
-          email: googleEmail,
-          role,
-          category,
-          isVerified: true,
+        return res.status(StatusCodes.NOT_FOUND).json({
+          status: false,
+          message: "User not found. Please register first.",
         });
       }
     } else {
