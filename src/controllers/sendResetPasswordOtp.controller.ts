@@ -64,7 +64,7 @@ export const requestPasswordOtp = async (req: Request, res: Response) => {
 
     res.status(StatusCodes.OK).json({
       status: "success",
-      message: "Password reset link sent",
+      message: "otp sent, check your email",
     });
   } catch (error) {
     console.error("Error in requestPasswordOtp:", error);

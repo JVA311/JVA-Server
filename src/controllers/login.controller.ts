@@ -28,7 +28,7 @@ export const loginUser = async (req: Request, res: Response) => {
       let decoded;
       try {
         decoded = await admin.auth().verifyIdToken(googleToken);
-      } catch {
+      } catch (error) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
           status: false,
           message: "Invalid Google token",
@@ -103,7 +103,6 @@ export const loginUser = async (req: Request, res: Response) => {
       token,
     });
   } catch (error: any) {
-    console.error("Error during login:", error?.message || error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Login failed",

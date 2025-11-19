@@ -165,3 +165,27 @@ export const getRequestById = async (req: AuthenticatedRequest, res: Response) =
     });
   }
 }
+
+export const getSingleRequest = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const request = await RequestModel.findById(id);
+
+    if (!request) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Request not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      data: request,
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: "Failed to fetch request",
+    });
+  }
+}

@@ -6,6 +6,7 @@ import Mandate from "../models/Mandate";
 import ResetToken from "../models/PasswordResetToken";
 
 export const verifyPasswordOtp = async (req: Request, res: Response) => {
+  console.log("endpoint hit")
   try {
     const { email, otp } = req.body;
 

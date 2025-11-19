@@ -8,11 +8,11 @@ import { requestPasswordOtp } from "../controllers/sendResetPasswordOtp.controll
 
 const router = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/validate-register-otp", validateRegisterOtp);
-router.post("/password/otp", requestPasswordOtp);
-router.post("/password/otp/verify", verifyPasswordOtp);
+router.post("/register", registerUser); // ✅✅
+router.post("/login", loginUser); // ✅✅
+router.post("/validate-register-otp", validateRegisterOtp);// ✅✅
+router.post("/password/otp", requestPasswordOtp); // ✅✅
+router.post("/password/otp/verify", verifyPasswordOtp); // ✅✅
 router.put("/password/reset", resetPassword);
 
 export default router;
