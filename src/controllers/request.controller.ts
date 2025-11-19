@@ -23,12 +23,58 @@ export const createRequest = async (
       timeline,
       requestType,
       description,
+      landSize,
+      landValue,
+      housingProposal,
+      titleDocument,
+      sharingFormula,
+      residential,
+      commercial,
+      industrial,
+      agricultural,
+      lawyer,
+      propertyConsultant,
+      buildingExpert,
+      mandate,
+      title,
     } = req.body;
 
-    if (!fullName || !email || !requestType || !description) {
+    if (!fullName || !email || !requestType || !description || !title) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ status: false, message: "Please fill in all required fields" });
+    }
+
+    if (requestType === "land") {
+      if (
+        !landSize ||
+        !landValue ||
+        !titleDocument ||
+        !sharingFormula ||
+        !housingProposal
+      ) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          status: false,
+          message:
+            "Please provide all land request details: landSize, landValue, titleDocument, sharingFormula, housingProposal",
+        });
+      }
+    } else if (requestType === "development") {
+      if (!residential || !commercial || !industrial || !agricultural) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          status: false,
+          message:
+            "Please provide all development request details: residential, commercial, industrial, agricultural",
+        });
+      }
+    } else if (requestType === "partnership") {
+      if (!mandate || !lawyer || !propertyConsultant || !buildingExpert) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          status: false,
+          message:
+            "Please provide all partnership request details: mandate, lawyer, propertyConsultant, buildingExpert",
+        });
+      }
     }
 
     // Handle file uploads if present
@@ -78,6 +124,20 @@ export const createRequest = async (
       timeline,
       requestType,
       description,
+      landSize,
+      landValue,
+      housingProposal,
+      titleDocument,
+      sharingFormula,
+      residential,
+      commercial,
+      industrial,
+      agricultural,
+      lawyer,
+      propertyConsultant,
+      buildingExpert,
+      mandate,
+      title,
       documents: documentUrls,
     });
 
@@ -89,24 +149,24 @@ export const createRequest = async (
     }
 
     // Check user type (LandOwner/Mandate/Investor) and update their request count
-    const landOwner = await LandOwner.findById(userId);
-    const mandate = await Mandate.findById(userId);
-    const investor = await Investor.findById(userId);
+    const landOwnerModel = await LandOwner.findById(userId);
+    const mandateModel = await Mandate.findById(userId);
+    const investorModel = await Investor.findById(userId);
 
     // Increment totalRequest counter for the appropriate user type
-    if (landOwner) {
+    if (landOwnerModel) {
       await LandOwner.findByIdAndUpdate(
         userId,
         { $inc: { totalRequest: 1 } }, // Increment totalRequest by 1
         { new: true } // Return updated document
       );
-    } else if (mandate) {
+    } else if (mandateModel) {
       await Mandate.findByIdAndUpdate(
         userId,
         { $inc: { totalRequest: 1 } },
         { new: true }
       );
-    } else if (investor) {
+    } else if (investorModel) {
       await Investor.findByIdAndUpdate(
         userId,
         { $inc: { totalRequest: 1 } },
@@ -139,13 +199,18 @@ export const getAllRequests = async (req: Request, res: Response) => {
   }
 };
 
-export const getRequestById = async (req: AuthenticatedRequest, res: Response) => {
+export const getRequestById = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Not authorized" });
     }
     const { id } = req.user;
-    const request = await RequestModel.find({ userId: id }).sort({ createdAt: -1 });
+    const request = await RequestModel.find({ userId: id }).sort({
+      createdAt: -1,
+    });
 
     if (!request) {
       return res.status(StatusCodes.NOT_FOUND).json({
@@ -164,7 +229,7 @@ export const getRequestById = async (req: AuthenticatedRequest, res: Response) =
       message: "Failed to fetch request",
     });
   }
-}
+};
 
 export const getSingleRequest = async (req: Request, res: Response) => {
   try {
@@ -188,4 +253,4 @@ export const getSingleRequest = async (req: Request, res: Response) => {
       message: "Failed to fetch request",
     });
   }
-}
+};

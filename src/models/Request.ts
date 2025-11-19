@@ -11,9 +11,23 @@ export interface IRequest extends Document {
   requestType: string;
   description: string;
   documents?: string[];
+  landSize?: string;
+  landValue?: string;
+  housingProposal?: string;
+  titleDocument?: string;
+  sharingFormula?: string;
+  residential?: string;
+  commercial?: string;
+  industrial?: string;
+  agricultural?: string;
+  mandate?: string;
+  lawyer?: string;
+  propertyConsultant?: string;
+  buildingExpert?: string;
+  title?: string
 }
 
-const RequestSchema: Schema = new Schema(
+const RequestSchema: Schema<IRequest> = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -30,6 +44,20 @@ const RequestSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    landSize: { type: String },
+    landValue: { type: String },
+    housingProposal: { type: String },
+    titleDocument: { type: String },
+    sharingFormula: { type: String },
+    residential: { type: String },
+    commercial: { type: String },
+    industrial: { type: String },
+    agricultural: { type: String },
+    mandate: { type: String },
+    lawyer: { type: String },
+    propertyConsultant: { type: String },
+    buildingExpert: { type: String },
+    title: { type: String },
     description: { type: String },
     documents: [{ type: String }],
   },
