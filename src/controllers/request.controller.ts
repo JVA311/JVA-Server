@@ -28,14 +28,8 @@ export const createRequest = async (
       housingProposal,
       titleDocument,
       sharingFormula,
-      residential,
-      commercial,
-      industrial,
-      agricultural,
-      lawyer,
-      propertyConsultant,
-      buildingExpert,
-      mandate,
+      developmentType,
+      partnershipType,
       title,
     } = req.body;
 
@@ -56,23 +50,7 @@ export const createRequest = async (
         return res.status(StatusCodes.BAD_REQUEST).json({
           status: false,
           message:
-            "Please provide all land request details: landSize, landValue, titleDocument, sharingFormula, housingProposal",
-        });
-      }
-    } else if (requestType === "development") {
-      if (!residential || !commercial || !industrial || !agricultural) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          status: false,
-          message:
-            "Please provide all development request details: residential, commercial, industrial, agricultural",
-        });
-      }
-    } else if (requestType === "partnership") {
-      if (!mandate || !lawyer || !propertyConsultant || !buildingExpert) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          status: false,
-          message:
-            "Please provide all partnership request details: mandate, lawyer, propertyConsultant, buildingExpert",
+            "Please provide all land request details",
         });
       }
     }
@@ -129,14 +107,8 @@ export const createRequest = async (
       housingProposal,
       titleDocument,
       sharingFormula,
-      residential,
-      commercial,
-      industrial,
-      agricultural,
-      lawyer,
-      propertyConsultant,
-      buildingExpert,
-      mandate,
+      developmentType,
+      partnershipType,
       title,
       documents: documentUrls,
     });
