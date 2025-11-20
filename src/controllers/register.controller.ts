@@ -82,9 +82,9 @@ export const registerUser = async (req: Request, res: Response) => {
 
     // generate JWT token for auto-login
     const token = jwt.sign(
-      { id: user._id, role: user.role},
+      { id: user._id, role: user.role, category: user.category },
       process.env.JWT_SECRET!,
-      { expiresIn: "2d"}
+      { expiresIn: "1d"}
     )
 
     return res.status(StatusCodes.CREATED).json({

@@ -63,11 +63,11 @@ export const createRequest = async (
     if (files && files.length > 0) {
       for (const file of files) {
         // Create unique filename using timestamp
-        const fileName = `${Date.now()}-${file.originalname}`;
+        const fileName = `public/${Date.now()}-${file.originalname}`;
 
         // Upload file to Supabase storage bucket
         const { data, error } = await supabase.storage
-          .from("JVA")
+          .from("JVA-BUCKET")
           .upload(fileName, file.buffer, {
             contentType: file.mimetype,
             upsert: false,
@@ -81,7 +81,7 @@ export const createRequest = async (
         }
 
         // Get public URL for the uploaded file
-        const publicUrl = supabase.storage.from("JVA").getPublicUrl(fileName)
+        const publicUrl = supabase.storage.from("JVA-BUCKET").getPublicUrl(fileName)
           .data.publicUrl;
 
         documentUrls.push(publicUrl);
@@ -223,6 +223,30 @@ export const getSingleRequest = async (req: Request, res: Response) => {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Failed to fetch request",
+    });
+  }
+};
+
+export const deleteRequest = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const deletedRequest = await RequestModel.findByIdAndDelete(id);
+
+    if (!deletedRequest) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Request not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Request deleted successfully",
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: "Failed to delete request",
     });
   }
 };

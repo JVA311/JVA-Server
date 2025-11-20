@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/dbConnection";
 import cors from "cors";
 import routes from "./routes/routes";
+import morgan from "morgan";
 // import http from "http";
 // import { Server } from "socket.io";
 
@@ -10,6 +11,9 @@ import routes from "./routes/routes";
 dotenv.config();
 
 const app = express();
+
+// Logging
+app.use(morgan("dev"));
 
 // Middleware
 app.use(cors());
