@@ -11,6 +11,6 @@ router.get("/", authMiddleware, getAllRequests);
 router.get("/getUserRequests", authMiddleware, getRequestById);
 router.get("/search", authMiddleware, searchRequests);
 router.get("/user/:id", authMiddleware, getSingleRequest);
-router.delete("/delete/:id", authMiddleware, deleteRequest);
+router.delete("/delete", authMiddleware, deleteRequest);
 
 export default router;

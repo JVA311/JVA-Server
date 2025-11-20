@@ -49,8 +49,7 @@ export const createRequest = async (
       ) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           status: false,
-          message:
-            "Please provide all land request details",
+          message: "Please provide all land request details",
         });
       }
     }
@@ -81,8 +80,9 @@ export const createRequest = async (
         }
 
         // Get public URL for the uploaded file
-        const publicUrl = supabase.storage.from("JVA-BUCKET").getPublicUrl(fileName)
-          .data.publicUrl;
+        const publicUrl = supabase.storage
+          .from("JVA-BUCKET")
+          .getPublicUrl(fileName).data.publicUrl;
 
         documentUrls.push(publicUrl);
       }
@@ -227,10 +227,13 @@ export const getSingleRequest = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteRequest = async (req: Request, res: Response) => {
+export const deleteRequest = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
-    const { id } = req.params;
-    const deletedRequest = await RequestModel.findByIdAndDelete(id);
+    const { id } = req.user!;
+    const deletedRequest = await RequestModel.findOneAndDelete({ userId: id });
 
     if (!deletedRequest) {
       return res.status(StatusCodes.NOT_FOUND).json({

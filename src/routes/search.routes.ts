@@ -4,6 +4,6 @@ import { searchProperties } from "../controllers/search.controller";
 const router = Router();
 
 // 🔍 Search properties route
-router.get("/", searchProperties);
+router.post("/", searchProperties);
 
 export default router;

@@ -1,57 +1,59 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import LandOwner from "../models/LandOwner";
-import Investor from "../models/Investor";
-import { Model } from "mongoose";
-
-interface SearchQuery {
-  location?: string;
-  type?: "land" | "develop";
-}
+import RequestModel from "../models/Request";
 
 export const searchProperties = async (req: Request, res: Response) => {
   try {
-    const { location, type } = req.query as SearchQuery;
+    const { location, type } = req.body as {
+      location?: string;
+      type?: "land" | "develop";
+    };
 
-    if (!type) {
+    // Validate type
+    if (!["land", "develop"].includes(type as string)) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: false,
-        message: "Please specify a type to search for: 'land' or 'develop'",
+        message: "Type must be either 'land' or 'develop'",
       });
     }
 
-    // Build query object
-    const query: any = {};
+    // Build requestType filter
+    let requestTypeFilter: string[] = [];
 
-    if (location) {
-      if (type === "land") {
-        query.landLocation = { $regex: location, $options: "i" };
-      } else {
-        query.preferredLocation = { $regex: location, $options: "i" };
-      }
+    if (type === "land") {
+      requestTypeFilter = ["land", "partnership"];
+    } else if (type === "develop") {
+      requestTypeFilter = ["development", "partnership"];
     }
-    // Select the appropriate model based on type
-    const model: Model<any> = type === "land" ? LandOwner : Investor;
 
-    const results = await model.find(query).select(
-      type === "land"
-        ? {
-            landLocation: 1,
-            landSize: 1,
-            landDescription: 1,
-            documentationStatus: 1,
-            licenseNumber: 1,
-            preferredPartnershipType: 1,
-          }
-        : {
-            preferredLocation: 1,
-            projectType: 1,
-            budgetRange: 1,
-            investmentType: 1,
-            registrationLicenseNumber: 1,
-            yearsOfExperience: 1,
-          }
-    );
+    // Build query object
+    const query: any = {
+      requestType: { $in: requestTypeFilter },
+    };
+
+    // Optional location search
+    if (location) {
+      query.location = { $regex: location, $options: "i" };
+    }
+
+    // Perform the search
+    const results = await RequestModel.find(query).select({
+      fullName: 1,
+      email: 1,
+      phoneNumber: 1,
+      location: 1,
+      budget: 1,
+      timeline: 1,
+      requestType: 1,
+      description: 1,
+      landSize: 1,
+      landValue: 1,
+      developmentType: 1,
+      partnershipType: 1,
+      title: 1,
+      documents: 1,
+      createdAt: 1,
+    });
 
     return res.status(StatusCodes.OK).json({
       status: true,
@@ -59,10 +61,13 @@ export const searchProperties = async (req: Request, res: Response) => {
       count: results.length,
       results,
     });
-  } catch {
+  } catch (error: any) {
+    console.error("Search error:", error.message);
+
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Failed to search properties",
+      error: error.message,
     });
   }
 };
