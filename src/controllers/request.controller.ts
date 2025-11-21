@@ -151,8 +151,7 @@ export const createRequest = async (
       status: true,
       message: "Request created successfully",
     });
-  } catch (err: any) {
-    console.log(err.message);
+  } catch {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ status: false, message: "Something went wrong" });
@@ -164,7 +163,7 @@ export const getAllRequests = async (req: Request, res: Response) => {
     // Fetch all requests and sort by creation date (descending)
     const requests = await RequestModel.find().sort({ createdAt: -1 });
     res.status(StatusCodes.OK).json(requests);
-  } catch (err) {
+  } catch {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch requests" });
@@ -195,7 +194,7 @@ export const getRequestById = async (
       status: true,
       data: request,
     });
-  } catch (err) {
+  } catch {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Failed to fetch request",
@@ -219,7 +218,7 @@ export const getSingleRequest = async (req: Request, res: Response) => {
       status: true,
       data: request,
     });
-  } catch (err) {
+  } catch {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Failed to fetch request",
@@ -246,10 +245,65 @@ export const deleteRequest = async (
       status: true,
       message: "Request deleted successfully",
     });
-  } catch (err) {
+  } catch {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: "Failed to delete request",
+    });
+  }
+};
+
+export const updateRequest = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const { id } = req.user!;
+    const updateData = req.body;
+    let uploadedImages: string[] = [];
+
+    if (req.files) {
+      const files = req.files as Express.Multer.File[];
+      for (const file of files) {
+        const fileName = `public/${Date.now()}-${file.originalname}`;
+        const { data, error } = await supabase.storage
+          .from("JVA-BUCKET")
+          .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false,
+          });
+        if (error) {
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            status: false,
+            message: `File upload failed: ${error.message}`,
+          });
+        }
+        const publicUrl = supabase.storage
+          .from("JVA-BUCKET")
+          .getPublicUrl(fileName).data.publicUrl;
+        uploadedImages.push(publicUrl);
+      }
+      updateData.documents = uploadedImages;
+    }
+    const updatedRequest = await RequestModel.findOneAndUpdate(
+      { userId: id },
+      updateData,
+      { new: true }
+    );
+    if (!updatedRequest) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: false,
+        message: "Request not found",
+      });
+    }
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Request updated successfully",
+    });
+  } catch {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: "Failed to update request",
     });
   }
 };

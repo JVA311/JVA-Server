@@ -13,7 +13,7 @@ router.post("/login", loginUser); // ✅✅
 router.post("/validate-register-otp", validateRegisterOtp);// ✅✅
 router.post("/password/otp", requestPasswordOtp); // ✅✅
 router.post("/password/otp/verify", verifyPasswordOtp); // ✅✅
-router.put("/password/reset", resetPassword);
+router.put("/password/reset", resetPassword); // ✅✅
 
 export default router;
 
