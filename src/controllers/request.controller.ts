@@ -129,22 +129,21 @@ export const createRequest = async (
     if (landOwnerModel) {
       await LandOwner.findByIdAndUpdate(
         userId,
-        { $inc: { totalRequest: 1 } }, // Increment totalRequest by 1
         { new: true } // Return updated document
       );
     } else if (mandateModel) {
       await Mandate.findByIdAndUpdate(
         userId,
-        { $inc: { totalRequest: 1 } },
         { new: true }
       );
     } else if (investorModel) {
       await Investor.findByIdAndUpdate(
         userId,
-        { $inc: { totalRequest: 1 } },
         { new: true }
       );
     }
+
+
 
     // Send success response
     res.status(StatusCodes.CREATED).json({

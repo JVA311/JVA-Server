@@ -14,7 +14,6 @@ export interface IMandate extends Document {
   specialization: string;
   companyName: string;
   phoneNumber: string;
-  totalRequest: number;
   active: number;
   matched: number;
   availableMatches: number;
@@ -82,7 +81,6 @@ const MandateSchema: Schema<IMandate> = new Schema(
       trim: true,
       default: "",
     },
-    totalRequest: { type: Number, default: 0 },
     active: { type: Number, default: 0 },
     matched: { type: Number, default: 0 },
     availableMatches: { type: Number, default: 0 },

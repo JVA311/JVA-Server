@@ -18,7 +18,6 @@ export interface Iinvestor extends Document {
   companyName: string;
   phoneNumber: string;
   isVerified: boolean;
-  totalRequest: number;
   active: number;
   matched: number;
   availableMatches: number;
@@ -87,8 +86,6 @@ const InvestorSchema: Schema<Iinvestor> = new Schema(
       type: String,
       default: "",
     },
-
-    totalRequest: { type: Number, default: 0 },
     active: { type: Number, default: 0 },
     matched: { type: Number, default: 0 },
     availableMatches: { type: Number, default: 0 },

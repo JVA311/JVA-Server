@@ -18,7 +18,8 @@ export interface IRequest extends Document {
   sharingFormula?: string;
   developmentType?: string;
   partnershipType?: string;
-  title?: string
+  title?: string;
+  status: "pending" | "accepted" | "rejected";
 }
 
 const RequestSchema: Schema<IRequest> = new Schema(
@@ -48,6 +49,11 @@ const RequestSchema: Schema<IRequest> = new Schema(
     title: { type: String },
     description: { type: String },
     documents: [{ type: String }],
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

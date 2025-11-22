@@ -15,7 +15,6 @@ export interface ILandOwner extends Document {
   preferredPartnershipType: string;
   landDescription: string;
   phoneNumber: string;
-  totalRequest: number;
   active: number;
   matched: number;
   availableMatches: number;
@@ -83,7 +82,6 @@ const LandOwnerSchema: Schema<ILandOwner> = new Schema(
       type: String,
       default: "",
     },
-    totalRequest: { type: Number, default: 0 },
     active: { type: Number, default: 0 },
     matched: { type: Number, default: 0 },
     availableMatches: { type: Number, default: 0 },

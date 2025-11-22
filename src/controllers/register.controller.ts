@@ -4,6 +4,7 @@ import LandOwner from "../models/LandOwner";
 import Investor from "../models/Investor";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken"
+import sendRegisterEmail from "../utils/sendRegisterEmail";
 
 interface IUserInfo {
   fullName: string;
@@ -86,6 +87,9 @@ export const registerUser = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
       { expiresIn: "1d"}
     )
+
+    // Send welcome email
+    await sendRegisterEmail(email, fullName);
 
     return res.status(StatusCodes.CREATED).json({
       status: true,
