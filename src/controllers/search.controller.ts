@@ -51,6 +51,7 @@ export const searchProperties = async (req: Request, res: Response) => {
       developmentType: 1,
       partnershipType: 1,
       title: 1,
+      status: 1,
       documents: 1,
       createdAt: 1,
     });
