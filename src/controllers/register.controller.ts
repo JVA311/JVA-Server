@@ -85,7 +85,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: user._id, role: user.role, category: user.category },
       process.env.JWT_SECRET!,
-      { expiresIn: "1d"}
+      { expiresIn: "12h"}
     )
 
     // Send welcome email
