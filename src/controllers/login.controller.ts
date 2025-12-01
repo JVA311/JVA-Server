@@ -5,7 +5,6 @@ import { StatusCodes } from "http-status-codes";
 import Mandate from "../models/Mandate";
 import Investor from "../models/Investor";
 import LandOwner from "../models/LandOwner";
-import admin from "../config/firebaseAdmin";
 
 interface IUserInfo {
   fullName?: string;
@@ -13,29 +12,18 @@ interface IUserInfo {
   password?: string;
   role?: string;
   category?: string;
-  googleToken?: string;
+  googleEmail?: string;
 }
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password, googleToken } = req.body as IUserInfo;
+    const { email, password, googleEmail } = req.body as IUserInfo;
 
     let user;
 
     // google auth login
 
-    if (googleToken) {
-      let decoded;
-      try {
-        decoded = await admin.auth().verifyIdToken(googleToken);
-      } catch (error) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-          status: false,
-          message: "Invalid Google token",
-        });
-      }
-      const googleEmail = decoded?.email;
-
+    if (googleEmail) {
       // Check user in database
       const landOwnerUser = await LandOwner.findOne({ email: googleEmail });
       const mandateUser = await Mandate.findOne({ email: googleEmail });
