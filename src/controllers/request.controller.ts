@@ -132,18 +132,10 @@ export const createRequest = async (
         { new: true } // Return updated document
       );
     } else if (mandateModel) {
-      await Mandate.findByIdAndUpdate(
-        userId,
-        { new: true }
-      );
+      await Mandate.findByIdAndUpdate(userId, { new: true });
     } else if (investorModel) {
-      await Investor.findByIdAndUpdate(
-        userId,
-        { new: true }
-      );
+      await Investor.findByIdAndUpdate(userId, { new: true });
     }
-
-
 
     // Send success response
     res.status(StatusCodes.CREATED).json({
@@ -154,18 +146,6 @@ export const createRequest = async (
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ status: false, message: "Something went wrong" });
-  }
-};
-
-export const getAllRequests = async (req: Request, res: Response) => {
-  try {
-    // Fetch all requests and sort by creation date (descending)
-    const requests = await RequestModel.find().sort({ createdAt: -1 });
-    res.status(StatusCodes.OK).json(requests);
-  } catch {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Failed to fetch requests" });
   }
 };
 
