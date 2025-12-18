@@ -12,9 +12,6 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export const isAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Not authenticated" });
-  }
   if (req.user?.role !== "admin") {
     return res.status(StatusCodes.FORBIDDEN).json({ message: "Access denied. Admins only." });
   }
@@ -45,7 +42,6 @@ export const authMiddleware = (
 
     next();
   } catch (error) {
-    console.error("Auth error:", error);
     return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid or expired token" });
   }
 };

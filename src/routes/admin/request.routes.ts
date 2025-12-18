@@ -1,6 +1,6 @@
 import express from "express";
 
-import { isAdmin } from "../../middlewares/auth";
+import { isAdmin, authMiddleware } from "../../middlewares/auth";
 
 import {
   getAllRequests,
@@ -10,8 +10,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", isAdmin, getAllRequests);
-router.put("/approve/:id", isAdmin, approveRequest);
-router.put("/reject/:id", isAdmin, rejectRequest);
+router.get("/", authMiddleware, isAdmin, getAllRequests);
+router.put("/approve/:id", authMiddleware, isAdmin, approveRequest);
+router.put("/reject/:id", authMiddleware, isAdmin, rejectRequest);
 
 export default router;
