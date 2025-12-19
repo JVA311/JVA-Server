@@ -7,6 +7,7 @@ import contact from "./contact.routes";
 import requestRoutes from "./reqeust.routes";
 import searchRoutes from "./search.routes";
 import adminRequest from "./admin/request.routes";
+import adminUsers from "./admin/users.routes";
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use(`${base}/contact`, contact);
 router.use(`${base}/request`, requestRoutes);
 router.use(`${base}/search`, searchRoutes);
 router.use(`${base}/admin/requests`, adminRequest);
+router.use(`${base}/admin/users`, adminUsers);
 
 export default router;
