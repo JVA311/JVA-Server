@@ -6,6 +6,8 @@ import {
   getAllRequests,
   approveRequest,
   rejectRequest,
+  getAcceptedRequest,
+  getRejectedRequest,
 } from "../../controllers/admin/request.controller";
 
 const router = express.Router();
@@ -13,5 +15,7 @@ const router = express.Router();
 router.get("/", authMiddleware, isAdmin, getAllRequests);
 router.put("/approve/:id", authMiddleware, isAdmin, approveRequest);
 router.put("/reject/:id", authMiddleware, isAdmin, rejectRequest);
+router.get("/accepted", authMiddleware, isAdmin, getAcceptedRequest);
+router.get("/rejected", authMiddleware, isAdmin, getRejectedRequest);
 
 export default router;

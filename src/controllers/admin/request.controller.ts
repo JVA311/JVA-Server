@@ -65,3 +65,32 @@ export const rejectRequest = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getAcceptedRequest = async (req: Request, res: Response) => {
+  try {
+    const acceptedRequests = await RequestModel.find({
+      status: "accepted",
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(StatusCodes.OK).json(acceptedRequests);
+  } catch {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to fetch accepted requests" });
+  }
+};
+export const getRejectedRequest = async (req: Request, res: Response) => {
+  try {
+    const rejectedRequests = await RequestModel.find({
+      status: "rejected",
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(StatusCodes.OK).json(rejectedRequests);
+  } catch {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to fetch rejected requests" });
+  }
+};
