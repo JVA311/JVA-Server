@@ -9,6 +9,7 @@ import {
   updateRequest,
 } from "../controllers/request.controller";
 import { searchRequests } from "../controllers/searchRequests.controller";
+import { getAllRequests } from "../controllers/admin/request.controller";
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.post(
   upload.array("documents"),
   createRequest
 );
+router.get("/", authMiddleware, getAllRequests);
 router.get("/getUserRequests", authMiddleware, getRequestById);
 router.get("/search", authMiddleware, searchRequests);
 router.get("/user/:id", authMiddleware, getSingleRequest);

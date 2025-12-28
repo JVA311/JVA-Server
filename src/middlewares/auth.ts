@@ -12,7 +12,7 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export const isAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (req.user?.role !== "admin") {
+  if (req.user?.role !== "Admin") {
     return res.status(StatusCodes.FORBIDDEN).json({ message: "Access denied. Admins only." });
   }
   next();

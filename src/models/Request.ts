@@ -20,6 +20,7 @@ export interface IRequest extends Document {
   partnershipType?: string;
   title?: string;
   status: "pending" | "accepted" | "rejected";
+  embedding?: number[];
 }
 
 const RequestSchema: Schema<IRequest> = new Schema(
@@ -54,6 +55,7 @@ const RequestSchema: Schema<IRequest> = new Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
+    embedding: { type: [Number], index: true}
   },
   {
     timestamps: true,

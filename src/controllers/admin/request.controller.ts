@@ -6,9 +6,9 @@ export const getAllRequests = async (req: Request, res: Response) => {
   try {
     // Fetch all requests and sort by creation date (descending)
     const requests = await RequestModel.find().sort({ createdAt: -1 });
-    res.status(StatusCodes.OK).json(requests);
+    return res.status(StatusCodes.OK).json(requests);
   } catch {
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch requests" });
   }
@@ -80,6 +80,7 @@ export const getAcceptedRequest = async (req: Request, res: Response) => {
       .json({ error: "Failed to fetch accepted requests" });
   }
 };
+
 export const getRejectedRequest = async (req: Request, res: Response) => {
   try {
     const rejectedRequests = await RequestModel.find({
@@ -94,3 +95,18 @@ export const getRejectedRequest = async (req: Request, res: Response) => {
       .json({ error: "Failed to fetch rejected requests" });
   }
 };
+
+export const getPendingRequest = async (req: Request, res: Response) => {
+  try {
+    const pendingRequests = await RequestModel.find({
+      status: "pending",
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(StatusCodes.OK).json(pendingRequests);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to fetch pending requests" });
+  }
+}
