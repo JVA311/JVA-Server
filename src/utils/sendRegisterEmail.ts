@@ -20,7 +20,7 @@ const sendRegisterEmail = async (email: string, name: string) => {
   const templatePath = path.join(__dirname, "../templates/register.ejs");
   const htmlMessage = await ejs.renderFile(templatePath, {
     name,
-    link: "https://jointventureassets.com",
+    link: "https://www.jointventureassets.com",
   });
 
   // Email options
