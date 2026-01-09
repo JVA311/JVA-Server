@@ -62,6 +62,12 @@ export const createRequest = async (
     if (files && files.length > 0) {
       for (const file of files) {
         // Create unique filename using timestamp
+        if (!file.buffer) {
+          return res.status(StatusCodes.BAD_REQUEST).json({
+            status: false,
+            message: "Invalid file upload"
+          })
+        }
         const fileName = `public/${Date.now()}-${file.originalname}`;
 
         // Upload file to Supabase storage bucket
@@ -73,6 +79,7 @@ export const createRequest = async (
           });
 
         if (error) {
+          console.log(error)
           return res.status(StatusCodes.BAD_REQUEST).json({
             status: false,
             message: `File upload failed: ${error.message}`,
