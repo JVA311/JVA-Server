@@ -13,12 +13,7 @@ import { getAllRequests } from "../controllers/admin/request.controller";
 
 const router = express.Router();
 
-router.post(
-  "/create",
-  authMiddleware,
-  upload.array("documents"),
-  createRequest
-);
+router.post("/create", authMiddleware, upload.array("documents"), createRequest);
 router.get("/", authMiddleware, getAllRequests);
 router.get("/getUserRequests", authMiddleware, getRequestById);
 router.get("/search", authMiddleware, searchRequests);
