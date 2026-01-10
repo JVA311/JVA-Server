@@ -100,15 +100,6 @@ export const registerUser = async (req: Request, res: Response) => {
     );
 
     // Send welcome email
-    try {
-      await sendRegisterEmail(email, fullName);
-    } catch (error) {
-      await (UserModel as any).deleteOne({ _id: user._id });
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: "Something went wrong",
-      });
-    }
 
     return res.status(StatusCodes.CREATED).json({
       status: true,
