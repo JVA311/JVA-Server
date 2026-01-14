@@ -4,7 +4,7 @@ import LandOwner from "../models/LandOwner";
 import Investor from "../models/Investor";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
-import sendRegisterEmail from "../utils/sendRegisterEmail";
+// import sendRegisterEmail from "../utils/sendRegisterEmail";
 
 interface IUserInfo {
   fullName: string;
