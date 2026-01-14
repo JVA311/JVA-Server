@@ -60,7 +60,14 @@ export const requestPasswordOtp = async (req: Request, res: Response) => {
     }
 
     // Send otp to user's email
-    await sendForgotPasswordEmail(email, otp);
+    try {
+      await sendForgotPasswordEmail(email, otp);
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: "Error sending OTP email. Please try again.",
+      });
+    }
 
     res.status(StatusCodes.OK).json({
       status: "success",
