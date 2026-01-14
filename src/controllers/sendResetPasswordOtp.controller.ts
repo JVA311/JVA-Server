@@ -70,6 +70,6 @@ export const requestPasswordOtp = async (req: Request, res: Response) => {
     console.error("Error in requestPasswordOtp:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ status: false, message: "Server Error" });
+      .json({ status: false, message: "Server Error", error });
   }
 };
