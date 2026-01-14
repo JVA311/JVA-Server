@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/Mandate";
 import Otp from "../models/OtpModel";
-import sendRegisterEmail from "../utils/sendRegisterEmail";
+// import sendRegisterEmail from "../utils/sendRegisterEmail";
 import { StatusCodes } from "http-status-codes";
 
 export const validateRegisterOtp = async (req: Request, res: Response) => {
@@ -43,7 +43,7 @@ export const validateRegisterOtp = async (req: Request, res: Response) => {
     // Delete OTP and send welcome email
     await Otp.deleteOne({ _id: otpRecord._id });
 
-    await sendRegisterEmail(email, user.fullName);
+    // await sendRegisterEmail(email, user.fullName);
 
     return res
       .status(StatusCodes.OK)

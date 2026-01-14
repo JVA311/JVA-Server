@@ -1,33 +1,29 @@
-import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
 
+import { MailtrapClient } from "mailtrap"
+
 require("dotenv").config();
 
-const transporter = nodemailer.createTransport({
-  port: process.env.SMTP_PORT as unknown as number,
-  host: process.env.SMTP_HOST,
-  secure: false,
-  auth: {
-    user: process.env.GMAIL,
-    pass: process.env.GMAIL_PASS,
-  },
-});
+const mailtrap = new MailtrapClient({
+  token: process.env.MAILTRAP_API_KEY as string,
+})
 
 const sendForgotPasswordEmail = async (
-  email: string,
+  userEmail: string,
   otp: string
 ) => {
   const templatePath = path.join(__dirname, "../templates/forgotPassword.ejs");
 
   const html = await ejs.renderFile(templatePath, { otp });
 
-  await transporter.sendMail({
-    from: `"Joint Venture Assets" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: "Password Reset Request",
-    html,
-  });
+  mailtrap
+  .send({
+    from: { name: "Joint Venture Assets", email: "info@jointventureassets.com" },
+    to: [{ email: userEmail }],
+    subject: "Otp Token",
+    html
+  })
 };
 
 export default sendForgotPasswordEmail;
